@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.zyxist.chainsaw' version '0.3.1'
+    id 'org.beryx.jlink' version '1.4.4'
+}
+
+import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.os.OperatingSystem
+
+group 'template'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = mainClass
+
+def currentOS = OperatingSystem.current()
+def platform
+if (currentOS.isWindows()) {
+    platform = 'win'
+} else if (currentOS.isLinux()) {
+    platform = 'linux'
+} else if (currentOS.isMacOsX()) {
+    platform = 'mac'
+}
+
+jlink {
+    javaHome.set(Jvm.current().getJavaHome().getAbsolutePath())
+}
+
+dependencies {
+    implementation "org.openjfx:javafx-base:11:${platform}"
+    implementation "org.openjfx:javafx-graphics:11:${platform}"
+    implementation "org.openjfx:javafx-controls:11:${platform}"
+    implementation "org.openjfx:javafx-fxml:11:${platform}"
+}

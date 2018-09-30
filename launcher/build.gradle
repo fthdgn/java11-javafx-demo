@@ -1,0 +1,72 @@
+plugins {
+    id 'cpp'
+    id 'windows-resources'
+}
+
+import org.gradle.internal.jvm.Jvm
+import org.gradle.internal.os.OperatingSystem
+
+def currentOS = OperatingSystem.current()
+def jdkHomePath = Jvm.current().getJavaHome().getAbsolutePath()
+
+model {
+    platforms {
+        x64 {
+            architecture "x86_64"
+        }
+    }
+
+    repositories {
+        libs(PrebuiltLibraries) {
+            jni {
+                headers.srcDir "$jdkHomePath/include"
+            }
+            jni_win32 {
+                headers.srcDir "$jdkHomePath/include/win32"
+            }
+            jni_linux {
+                headers.srcDir "$jdkHomePath/include/linux"
+            }
+        }
+    }
+
+    binaries {
+        all {
+            // Define a preprocessor macro for every binary
+            cppCompiler.define "NDEBUG"
+
+            def mainClassName = mainClass.replaceAll("\\.", "/")
+            def moduleOptArg = "--add-modules=$mainModule"
+
+            if (currentOS.isLinux() && toolChain in Gcc) {
+                cppCompiler.args "-D_MAIN_CLASS_NAME=\"$mainClassName\"", "-D_MODULE_NAME=\"$moduleOptArg\""
+                linker.args "$jdkHomePath/lib/server/libjvm.so", '-Wl,-R,\'$ORIGIN/lib/server\'', "-ldl", "-no-pie"
+            }
+
+            if (currentOS.isWindows() && toolChain in VisualCpp) {
+                cppCompiler.args "/D_MAIN_CLASS_NAME=\"$mainClassName\"", "/D_MODULE_NAME=\"$moduleOptArg\""
+                linker.args "user32.lib", "/entry:wmainCRTStartup", "/subsystem:windows"
+            }
+        }
+    }
+
+    components {
+        main(NativeExecutableSpec) {
+            targetPlatform "x64"
+            sources {
+                cpp.lib library: 'jni', linkage: 'api'
+                if (currentOS.isLinux()) {
+                    cpp.lib library: 'jni_linux', linkage: 'api'
+                }
+                if (currentOS.isWindows()) {
+                    cpp.lib library: 'jni_win32', linkage: 'api'
+                }
+                rc {
+                    source {
+                        srcDirs "src/main/rc"
+                    }
+                }
+            }
+        }
+    }
+}
