@@ -1,0 +1,51 @@
+import org.gradle.internal.jvm.Jvm
+
+def currentJvm = Jvm.current()
+println "Java version: ${currentJvm.getJavaVersion()}"
+println "Java home: ${currentJvm.getJavaHome()}"
+
+if (currentJvm.getJavaVersion() != JavaVersion.VERSION_11)
+    throw new GradleException("Java version should be 11")
+
+ext.mainClass = "com.fthdgn.app.Main"
+ext.mainModule = "com.fthdgn.app"
+
+task copyLauncher(type: Copy) {
+    dependsOn "launcher:installMainExecutable"
+    from 'launcher/build/exe/main'
+    into 'deploy/'
+    rename 'main.exe', "app.exe"
+    rename 'main', "app"
+}
+
+task copyImage(type: Copy) {
+    dependsOn "app:jlink"
+    from 'app/build/image'
+    into 'deploy/'
+}
+
+task deleteDeploy(type: Delete) {
+    delete "deploy"
+}
+
+task deleteBuild(type: Delete) {
+    delete "build"
+}
+
+task clean() {
+    dependsOn deleteDeploy
+    dependsOn deleteBuild
+    dependsOn "launcher:clean"
+    dependsOn "app:clean"
+}
+
+task internalDeploy {
+    dependsOn copyImage
+    dependsOn copyLauncher
+}
+
+task deploy {
+    group "deploy"
+    dependsOn clean
+    finalizedBy internalDeploy
+}
