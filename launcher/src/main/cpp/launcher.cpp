@@ -1,4 +1,4 @@
-#ifdef __linux__
+#if defined(__APPLE__) || defined(__linux__)
 #include <cstdlib>
 #include <dlfcn.h>
 #elif _WIN32
@@ -9,7 +9,7 @@
 
 const int Message(char *z)
 {
-#ifdef __linux__
+#if defined(__APPLE__) || defined(__linux__)
     printf("%s\n", z);
 #elif _WIN32
     MessageBox(0, (LPCSTR)z, (LPCSTR) "Error", MB_SETFOREGROUND);
@@ -17,7 +17,7 @@ const int Message(char *z)
     return 1;
 }
 
-#ifdef __linux__
+#if defined(__APPLE__) || defined(__linux__)
 int main(int argc, char **argv)
 #elif _WIN32
 int wmain(int argc, wchar_t *argv[])
@@ -33,20 +33,29 @@ int wmain(int argc, wchar_t *argv[])
     vm_args.ignoreUnrecognized = JNI_FALSE;
     vm_args.options = options;
 
+#if defined(__APPLE__) || defined(_WIN32)
 #ifdef _WIN32
     HINSTANCE jvm_dll = LoadLibrary(TEXT("bin\\server\\jvm.dll"));
+#elif __APPLE__
+    void* jvm_dll = dlopen("./lib/server/libjvm.dylib", RTLD_LOCAL);
+#endif
     if (jvm_dll == NULL)
     {
         Message("Cannot load jvm library.");
         exit(1);
     }
     typedef jint(JNICALL *JNI_CreateJavaVM_ptr)(JavaVM **, void **, void *);
+#ifdef _WIN32
     JNI_CreateJavaVM_ptr createJavaVM_ptr = (JNI_CreateJavaVM_ptr)GetProcAddress(jvm_dll, "JNI_CreateJavaVM");
+#elif __APPLE__
+    JNI_CreateJavaVM_ptr createJavaVM_ptr = (JNI_CreateJavaVM_ptr)dlsym(jvm_dll, "JNI_CreateJavaVM");
+#endif
     if (createJavaVM_ptr == NULL)
     {
         Message("Cannot load JNI_CreateJavaVM function");
         exit(1);
     }
+#endif
 #endif
 
     JavaVM *jvm;

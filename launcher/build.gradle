@@ -27,6 +27,9 @@ model {
             jni_linux {
                 headers.srcDir "$jdkHomePath/include/linux"
             }
+            jni_darwin {
+                headers.srcDir "$jdkHomePath/include/darwin"
+            }
         }
     }
 
@@ -47,6 +50,10 @@ model {
                 cppCompiler.args "/D_MAIN_CLASS_NAME=\"$mainClassName\"", "/D_MODULE_NAME=\"$moduleOptArg\""
                 linker.args "user32.lib", "/entry:wmainCRTStartup", "/subsystem:windows"
             }
+
+            if (currentOS.isMacOsX() && toolChain in Clang) {
+                linker.args "-ldl", "-nopie"
+            }
         }
     }
 
@@ -60,6 +67,9 @@ model {
                 }
                 if (currentOS.isWindows()) {
                     cpp.lib library: 'jni_win32', linkage: 'api'
+                }
+                if (currentOS.isMacOsX()) {
+                    cpp.lib library: 'jni_darwin', linkage: 'api'
                 }
                 rc {
                     source {
