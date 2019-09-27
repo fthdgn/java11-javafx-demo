@@ -1,42 +1,33 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.zyxist.chainsaw' version '0.3.1'
-    id 'org.beryx.jlink' version '1.4.4'
+    id 'org.beryx.jlink' version '2.15.1'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 import org.gradle.internal.jvm.Jvm
-import org.gradle.internal.os.OperatingSystem
 
 group 'com.fthdgn'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 13
+targetCompatibility = 13
 
 repositories {
     mavenCentral()
 }
 
-mainClassName = mainClass
-
-def currentOS = OperatingSystem.current()
-def platform
-if (currentOS.isWindows()) {
-    platform = 'win'
-} else if (currentOS.isLinux()) {
-    platform = 'linux'
-} else if (currentOS.isMacOsX()) {
-    platform = 'mac'
-}
+mainClassName = mainModule + "/" + mainClass
 
 jlink {
-    javaHome.set(Jvm.current().getJavaHome().getAbsolutePath()) 
+    javaHome.set(Jvm.current().getJavaHome().getAbsolutePath())
 }
 
-dependencies {
-    implementation "org.openjfx:javafx-base:11:${platform}"
-    implementation "org.openjfx:javafx-graphics:11:${platform}"
-    implementation "org.openjfx:javafx-controls:11:${platform}"
-    implementation "org.openjfx:javafx-fxml:11:${platform}"
+javafx {
+    version = "13"
+    modules = [
+            'javafx.controls',
+            'javafx.fxml',
+            'javafx.graphics',
+    ]
 }
