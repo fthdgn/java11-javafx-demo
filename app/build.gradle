@@ -10,8 +10,8 @@ import org.gradle.internal.jvm.Jvm
 group 'com.fthdgn'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 13
-targetCompatibility = 13
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -31,7 +31,7 @@ run {
 }
 
 javafx {
-    version = "13"
+    version = "11.0.2"
     modules = [
             'javafx.controls',
             'javafx.fxml',

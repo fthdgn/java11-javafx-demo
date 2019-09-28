@@ -4,8 +4,8 @@ def currentJvm = Jvm.current()
 println "Java version: ${currentJvm.getJavaVersion()}"
 println "Java home: ${currentJvm.getJavaHome()}"
 
-if (currentJvm.getJavaVersion() != JavaVersion.VERSION_13)
-    throw new GradleException("Java version should be 13")
+if (currentJvm.getJavaVersion() != JavaVersion.VERSION_11)
+    throw new GradleException("Java version should be 11")
 
 ext.mainClass = "com.fthdgn.app.Main"
 ext.mainModule = "com.fthdgn.app"
