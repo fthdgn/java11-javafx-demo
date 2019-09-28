@@ -9,6 +9,9 @@ if (currentJvm.getJavaVersion() != JavaVersion.VERSION_11)
 
 ext.mainClass = "template.Main"
 ext.mainModule = "template"
+ext.jvmArgs = [
+        
+]
 
 task copyLauncher(type: Copy) {
     dependsOn "launcher:installMainExecutable"

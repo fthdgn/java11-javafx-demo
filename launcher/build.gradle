@@ -36,15 +36,20 @@ model {
             cppCompiler.define "NDEBUG"
 
             def mainClassName = mainClass.replaceAll("\\.", "/")
-            def moduleOptArg = "--add-modules=$mainModule"
-
+            def jvmArgsArrayMacro = "{\"--module-path=.\",\"--add-modules=$mainModule\""
+            for (arg in rootProject.jvmArgs) {
+                jvmArgsArrayMacro += ",\"$arg\""
+            }
+            jvmArgsArrayMacro += "}"
+            def jvmArgsCount = jvmArgs.size() + 2
+            
             if (currentOS.isLinux() && toolChain in Gcc) {
-                cppCompiler.args "-D_MAIN_CLASS_NAME=\"$mainClassName\"", "-D_MODULE_NAME=\"$moduleOptArg\""
+                cppCompiler.args "-D_MAIN_CLASS_NAME=\"$mainClassName\"", "-D_JVM_ARGS=$jvmArgsArrayMacro", "-D_JVM_ARGS_COUNT=$jvmArgsCount"
                 linker.args "$jdkHomePath/lib/server/libjvm.so", '-Wl,-R,\'$ORIGIN/lib/server\'', "-ldl", "-no-pie"
             }
 
             if (currentOS.isWindows() && toolChain in VisualCpp) {
-                cppCompiler.args "/D_MAIN_CLASS_NAME=\"$mainClassName\"", "/D_MODULE_NAME=\"$moduleOptArg\""
+                cppCompiler.args "/D_MAIN_CLASS_NAME=\"$mainClassName\"", "/D_JVM_ARGS=$jvmArgsArrayMacro", "/D_JVM_ARGS_COUNT=$jvmArgsCount"
                 linker.args "user32.lib", "/entry:wmainCRTStartup", "/subsystem:windows"
             }
         }
