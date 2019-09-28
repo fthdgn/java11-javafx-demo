@@ -38,3 +38,6 @@ javafx {
             'javafx.graphics',
     ]
 }
+dependencies {
+    implementation "com.jfoenix:jfoenix:9.0.8"
+}

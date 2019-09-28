@@ -10,7 +10,8 @@ if (currentJvm.getJavaVersion() != JavaVersion.VERSION_11)
 ext.mainClass = "com.fthdgn.app.Main"
 ext.mainModule = "com.fthdgn.app"
 ext.jvmArgs = [
-        
+        "--add-exports=javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
+        "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix"
 ]
 
 task copyLauncher(type: Copy) {
