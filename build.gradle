@@ -9,6 +9,9 @@ if (currentJvm.getJavaVersion() != JavaVersion.VERSION_13)
 
 ext.mainClass = "com.fthdgn.app.Main"
 ext.mainModule = "com.fthdgn.app"
+ext.jvmArgs = [
+        
+]
 
 task copyLauncher(type: Copy) {
     dependsOn "launcher:installMainExecutable"

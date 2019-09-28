@@ -23,13 +23,16 @@ int main(int argc, char **argv)
 int wmain(int argc, wchar_t *argv[])
 #endif
 {
-    JavaVMOption options[2];
-    options[0].optionString = "--module-path=.";
-    options[1].optionString = _MODULE_NAME;
+    char *JVM_ARG[] = _JVM_ARGS;
+    
+    JavaVMOption* options = new JavaVMOption[sizeof(JVM_ARG)];
+    for (int i = 0; i < _JVM_ARGS_COUNT; i++) {
+        options[i].optionString = JVM_ARG[i];
+    }
 
     JavaVMInitArgs vm_args;
     vm_args.version = JNI_VERSION_10;
-    vm_args.nOptions = 2;
+    vm_args.nOptions = _JVM_ARGS_COUNT;
     vm_args.ignoreUnrecognized = JNI_FALSE;
     vm_args.options = options;
 

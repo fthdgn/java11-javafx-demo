@@ -21,6 +21,13 @@ mainClassName = mainModule + "/" + mainClass
 
 jlink {
     javaHome.set(Jvm.current().getJavaHome().getAbsolutePath())
+    launcher {
+        jvmArgs += rootProject.jvmArgs
+    }
+}
+
+run {
+    jvmArgs += rootProject.jvmArgs
 }
 
 javafx {
