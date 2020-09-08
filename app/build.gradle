@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.beryx.jlink' version '2.15.1'
+    id 'org.beryx.jlink' version '2.21.4'
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
@@ -10,16 +10,21 @@ import org.gradle.internal.jvm.Jvm
 group 'template'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 14
+targetCompatibility = 14
+
+application {
+    mainModule  = myMainModuleName
+    mainClass  = myMainClassName
+}
 
 repositories {
     mavenCentral()
 }
 
-mainClassName = mainModule + "/" + mainClass
-
 jlink {
+    moduleName  = application.mainModule
+    mainClass  = application.mainClass
     javaHome.set(Jvm.current().getJavaHome().getAbsolutePath())
     launcher {
         jvmArgs += rootProject.jvmArgs
@@ -31,7 +36,7 @@ run {
 }
 
 javafx {
-    version = "11"
+    version = "14"
     modules = [
             'javafx.controls',
             'javafx.fxml',

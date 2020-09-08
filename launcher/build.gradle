@@ -35,8 +35,8 @@ model {
             // Define a preprocessor macro for every binary
             cppCompiler.define "NDEBUG"
 
-            def mainClassName = mainClass.replaceAll("\\.", "/")
-            def jvmArgsArrayMacro = "{\"--module-path=.\",\"--add-modules=$mainModule\""
+            def mainClassName = myMainClassName.replaceAll("\\.", "/")
+            def jvmArgsArrayMacro = "{\"--module-path=.\",\"--add-modules=$myMainModuleName\""
             for (arg in rootProject.jvmArgs) {
                 jvmArgsArrayMacro += ",\"$arg\""
             }
